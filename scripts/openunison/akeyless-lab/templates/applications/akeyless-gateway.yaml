@@ -1,0 +1,191 @@
+---
+apiVersion: openunison.tremolo.io/v2
+kind: Application
+metadata:
+  labels:
+    app.kubernetes.io/component: openunison-applications
+    app.kubernetes.io/instance: openunison-orchestra-login-portal
+    app.kubernetes.io/name: openunison
+    app.kubernetes.io/part-of: openunison
+  name: akeyless-gateway
+  namespace: {{ .Release.Namespace }}
+spec:
+  azTimeoutMillis: 3000
+  cookieConfig:
+    cookiesEnabled: false
+    domain: '{{ .Values.akeyless_gw_host }}'
+    httpOnly: true
+    keyAlias: session-unison
+    logoutURI: /logout
+    scope: -1
+    secure: true
+    sessionCookieName: tremolosession
+    timeout: 900
+  isApp: true
+  urls:
+  - azRules:
+    - constraint: o=Tremolo
+      scope: dn
+    filterChain:
+    - className: com.tremolosecurity.proxy.filters.JavaScriptFilter
+      params:
+        javaScript: |-
+          
+          GlobalEntries = Java.type("com.tremolosecurity.server.GlobalEntries");
+
+          function initFilter(config) {
+
+          }
+
+          function doFilter(request,response,chain) {
+            uriParams = request.getAttribute("TREMOLO_URI_PARAMS");
+            currentUri = uriParams.get("fullURI");
+            if (currentUri.startsWith("/gw")) {
+              currentUri = currentUri.substring(3);
+            }
+
+            uriParams.put("localURI",currentUri);
+            chain.nextFilter(request,response,chain);
+          }
+    hosts:
+    - '{{ .Values.akeyless_gw_host }}'
+    
+    results:
+      auFail: default-login-failure
+      azFail: default-login-failure
+    uri: /
+    proxyTo: http://gw-akeyless-api-gateway.akeyless.svc:18888${localURI}
+    authChain: anon
+  - azRules:
+    - constraint: o=Tremolo
+      scope: dn
+    filterChain:
+    - className: com.tremolosecurity.proxy.filters.JavaScriptFilter
+      params:
+        javaScript: |-
+          
+          GlobalEntries = Java.type("com.tremolosecurity.server.GlobalEntries");
+
+          function initFilter(config) {
+
+          }
+
+          function doFilter(request,response,chain) {
+            uriParams = request.getAttribute("TREMOLO_URI_PARAMS");
+            currentUri = uriParams.get("fullURI");
+            if (currentUri.startsWith("/gw")) {
+              currentUri = currentUri.substring(3);
+            }
+
+            uriParams.put("localURI",currentUri);
+            chain.nextFilter(request,response,chain);
+          }
+    hosts:
+    - '{{ .Values.akeyless_gw_host }}'
+    
+    results:
+      auFail: default-login-failure
+      azFail: default-login-failure
+    uri: /gw/hvp
+    proxyTo: http://gw-akeyless-api-gateway.akeyless.svc:8200${localURI}
+    authChain: anon
+  - azRules:
+    - constraint: o=Tremolo
+      scope: dn
+    filterChain:
+    - className: com.tremolosecurity.proxy.filters.JavaScriptFilter
+      params:
+        javaScript: |-
+          
+          GlobalEntries = Java.type("com.tremolosecurity.server.GlobalEntries");
+
+          function initFilter(config) {
+
+          }
+
+          function doFilter(request,response,chain) {
+            uriParams = request.getAttribute("TREMOLO_URI_PARAMS");
+            currentUri = uriParams.get("fullURI");
+            if (currentUri.startsWith("/gw")) {
+              currentUri = currentUri.substring(3);
+            }
+
+            uriParams.put("localURI",currentUri);
+            chain.nextFilter(request,response,chain);
+          }
+    hosts:
+    - '{{ .Values.akeyless_gw_host }}'
+    
+    results:
+      auFail: default-login-failure
+      azFail: default-login-failure
+    uri: /gw/rest
+    proxyTo: http://gw-akeyless-api-gateway.akeyless.svc:8080${localURI}
+    authChain: anon
+  - azRules:
+    - constraint: o=Tremolo
+      scope: dn
+    filterChain:
+    - className: com.tremolosecurity.proxy.filters.JavaScriptFilter
+      params:
+        javaScript: |-
+          
+          GlobalEntries = Java.type("com.tremolosecurity.server.GlobalEntries");
+
+          function initFilter(config) {
+
+          }
+
+          function doFilter(request,response,chain) {
+            uriParams = request.getAttribute("TREMOLO_URI_PARAMS");
+            currentUri = uriParams.get("fullURI");
+            if (currentUri.startsWith("/gw")) {
+              currentUri = currentUri.substring(3);
+            }
+
+            uriParams.put("localURI",currentUri);
+            chain.nextFilter(request,response,chain);
+          }
+    hosts:
+    - '{{ .Values.akeyless_gw_host }}'
+    
+    results:
+      auFail: default-login-failure
+      azFail: default-login-failure
+    uri: /gw/gwapi
+    proxyTo: http://gw-akeyless-api-gateway.akeyless.svc:8081${localURI}
+    authChain: anon
+  - azRules:
+    - constraint: o=Tremolo
+      scope: dn
+    filterChain:
+    - className: com.tremolosecurity.proxy.filters.JavaScriptFilter
+      params:
+        javaScript: |-
+          
+          GlobalEntries = Java.type("com.tremolosecurity.server.GlobalEntries");
+          System = Java.type("java.lang.System");
+
+          function initFilter(config) {
+
+          }
+
+          function doFilter(request,response,chain) {
+            uriParams = request.getAttribute("TREMOLO_URI_PARAMS");
+            currentUri = uriParams.get("fullURI");
+            if (currentUri.startsWith("/gw")) {
+              currentUri = currentUri.substring(3);
+            }
+
+            uriParams.put("localURI",currentUri);
+            chain.nextFilter(request,response,chain);
+          }
+    hosts:
+    - '{{ .Values.akeyless_gw_host }}'
+    
+    results:
+      auFail: default-login-failure
+      azFail: default-login-failure
+    uri: /gw/config
+    proxyTo: http://gw-akeyless-api-gateway.akeyless.svc:8000${localURI}
+    authChain: anon
